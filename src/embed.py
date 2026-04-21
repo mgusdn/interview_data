@@ -33,7 +33,7 @@ def main():
     print("Chroma 컬렉션 생성 완료")
 
     # 4. 임베딩 생성 (질문 + 답변 전체를 임베딩)
-    texts = [f"{item['question']} {item['answer']}" for item in data]
+    texts = [item["question"] for item in data]
     print("임베딩 생성 중... (시간이 걸릴 수 있어요)")
     embeddings = model.encode(texts, show_progress_bar=True)
 
