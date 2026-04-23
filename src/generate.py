@@ -6,20 +6,10 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, 'src')
 from retrieve import retrieve
+from rerank import rerank
 
 load_dotenv()
 client = OpenAI()
-
-CATEGORIES = [
-    "statistics-math",
-    "machine-learning",
-    "deep-learning",
-    "python",
-    "network",
-    "operating-system",
-    "data-structure",
-    "algorithm",
-]
 
 
 def analyze_query(user_query: str) -> dict:
@@ -75,7 +65,6 @@ def generate_answer(user_query: str) -> str:
     results = retrieve(rewritten_query, k=5, category=category, threshold=0.5)
 
     if not results:
-        # threshold 낮춰서 재시도
         results = retrieve(rewritten_query, k=5, category=category, threshold=0.3)
 
     if not results:
@@ -83,12 +72,18 @@ def generate_answer(user_query: str) -> str:
 
     print(f"검색 결과: {len(results)}개")
 
-    # 3. 컨텍스트 구성
+    # 3. 재순위 적용
+    results = rerank(rewritten_query, results, top_k=3)
+    print(f"재순위 후: {len(results)}개")
+    for r in results:
+        print(f"  [{r['rank']}] {r['question']} | rerank_score: {r['rerank_score']}")
+
+    # 4. 컨텍스트 구성
     context = ""
     for r in results:
         context += f"Q: {r['question']}\nA: {r['answer']}\n\n"
 
-    # 4. 최종 답변 생성
+    # 5. 최종 답변 생성
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{

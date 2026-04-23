@@ -6,3 +6,5 @@ sentence-transformers
 anthropic
 python-dotenv
 streamlit
+openai
+FlagEmbedding
