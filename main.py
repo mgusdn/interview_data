@@ -20,6 +20,10 @@ def main():
     print("=" * 50)
 
     answer = generate_answer(args.query)
+    print("\n")
+    print("=" * 50)
+    print("\n")
+    print("답변:")
     print(answer)
     print("=" * 50)
 
